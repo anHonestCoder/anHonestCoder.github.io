@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="虚拟机类加载机制是什么虚拟机类加载机制是指虚拟机把描述类的数据从Class文件或其他二进制的字节流形式加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的java类型。类的加载、链接和初始化过程都是在程序运行期间完成的。 类加载的时机类从被加载到虚拟机内存开始，到卸载出内存为止，它的生命周期包括：加载、验证、准备、解析、初始化、使用、卸载7个阶段。其中验证、准备、解析3个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="虚拟机类加载机制">
+<meta property="og:url" content="http://www.baidu.com/2019/06/16/虚拟机类加载机制/index.html">
+<meta property="og:site_name" content="Simon&#39;s Blog">
+<meta property="og:description" content="虚拟机类加载机制是什么虚拟机类加载机制是指虚拟机把描述类的数据从Class文件或其他二进制的字节流形式加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的java类型。类的加载、链接和初始化过程都是在程序运行期间完成的。 类加载的时机类从被加载到虚拟机内存开始，到卸载出内存为止，它的生命周期包括：加载、验证、准备、解析、初始化、使用、卸载7个阶段。其中验证、准备、解析3个">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://www.baidu.com/2019/06/16/虚拟机类加载机制/类的生命周期.png">
+<meta property="og:updated_time" content="2019-07-29T07:04:28.395Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="虚拟机类加载机制">
+<meta name="twitter:description" content="虚拟机类加载机制是什么虚拟机类加载机制是指虚拟机把描述类的数据从Class文件或其他二进制的字节流形式加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的java类型。类的加载、链接和初始化过程都是在程序运行期间完成的。 类加载的时机类从被加载到虚拟机内存开始，到卸载出内存为止，它的生命周期包括：加载、验证、准备、解析、初始化、使用、卸载7个阶段。其中验证、准备、解析3个">
+<meta name="twitter:image" content="http://www.baidu.com/2019/06/16/虚拟机类加载机制/类的生命周期.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.baidu.com/2019/06/16/虚拟机类加载机制/">
+
+
+
+
+
+  <title>虚拟机类加载机制 | Simon's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Simon's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            About
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.baidu.com/2019/06/16/虚拟机类加载机制/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Simon">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/detective.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Simon's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">虚拟机类加载机制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-16T11:04:14+08:00">
+                2019-06-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="虚拟机类加载机制是什么"><a href="#虚拟机类加载机制是什么" class="headerlink" title="虚拟机类加载机制是什么"></a>虚拟机类加载机制是什么</h1><p>虚拟机类加载机制是指虚拟机把描述类的数据从Class文件或其他二进制的字节流形式加载到内存，并对数据进行校验、转换解析和初始化，最终形成可以被虚拟机直接使用的java类型。类的加载、链接和初始化过程都是在程序<strong>运行期间</strong>完成的。</p>
+<h1 id="类加载的时机"><a href="#类加载的时机" class="headerlink" title="类加载的时机"></a>类加载的时机</h1><p>类从被加载到虚拟机内存开始，到卸载出内存为止，它的生命周期包括：加载、验证、准备、解析、初始化、使用、卸载7个阶段。其中验证、准备、解析3个部分统称为连接。<br><img src="/2019/06/16/虚拟机类加载机制/类的生命周期.png" alt=""></p>
+<p>什么情况下开始类加载过程的第一个阶段：加载？Java虚拟机规范没有进行强制约束，这一点由虚拟机的具体实现决定。</p>
+<p>但是对于初始化阶段，虚拟机规范则是严格规定了<strong>有且只有</strong>5中情况必须立即对类进行“初始化”：</p>
+<ul>
+<li>遇到<code>new</code>、 <code>getstatic</code>、 <code>putstatic</code>或<code>invokestatic</code>这4条字节码指令时，如果类还没有初始化过，则需要先触发其初始化；<br>生成这4条指令的最常见的Java代码场景是：使用<code>new</code>关键字实例化对象的时候、读取或者设置一个类的静态字段（被<code>final</code>修饰、已经在编译期把结果放入常量池的静态字段除外）的时候，以及调用一个类的静态方法的时候。</li>
+<li>使用<code>java.lang.reflect</code>包的方法对类进行反射调用的时候，如果类还没有初始化过，则需要先触发其初始化；</li>
+<li>当初始化一个类的时候，如果发现其父类还没有被初始化，则需要先触发其父类的是初始化；<br>这一点，接口初始化与类初始化有差异，接口初始化时并不要求其父接口全部都完成初始化，只有在用到父接口的时候才会初始化。</li>
+<li>当虚拟机启动时，用户需要指定一个要执行的主类（包括<code>main()</code>方法的那个类），虚拟机会先初始化这个主类；</li>
+<li>当使用JDK1.7的动态语言支持时，如果一个<code>java.lang.invoke.MethodHandle</code>实例最后解析结果是<code>REF_getStatic</code>、<code>REF_putStatic</code>、<code>REF_invokeStatic</code>的方法句柄，并且这个方法句柄对应的类没有进行过初始化，则需要先触发其初始化。</li>
+</ul>
+<h2 id="被动引用和被动引用的几个例子"><a href="#被动引用和被动引用的几个例子" class="headerlink" title="被动引用和被动引用的几个例子"></a>被动引用和被动引用的几个例子</h2><p>对于上述5中会触发类初始化的场景，虚拟机规范中使用了一个很强烈的限定语：<strong>“有且只有”</strong>，这5中场景中的行为称为对一个类进行<strong>主动引用</strong>。</p>
+<p>除此之外，所有引用类的方式都不会触发初始化，称为<strong>被动引用</strong>。</p>
+<h3 id="被动引用例一"><a href="#被动引用例一" class="headerlink" title="被动引用例一"></a>被动引用例一</h3><p><strong>通过子类引用父类的静态字段，不会导致子类初始化。</strong>对于静态字段，只有直接定义这个字段类才会被初始化，因此通过子类来引用父类中定义的静态字段，只会触发父类的初始化而不会触发子类的初始化。</p>
+<h3 id="被动引用例二"><a href="#被动引用例二" class="headerlink" title="被动引用例二"></a>被动引用例二</h3><p><strong>通过数组定义来引用类，不会触发此类的初始化。</strong></p>
+<h3 id="被动引用例三"><a href="#被动引用例三" class="headerlink" title="被动引用例三"></a>被动引用例三</h3><p><strong>常量在编译阶段会存入调用类的常量池中，本质上并没有直接引用到定义常量的类，因此不会触发定义常量的类的初始化。</strong></p>
+<h1 id="类加载的过程"><a href="#类加载的过程" class="headerlink" title="类加载的过程"></a>类加载的过程</h1><h2 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h2><p>“加载”是“类加载”过程的一个阶段。在加载阶段，虚拟机需要完成以下3件事情：</p>
+<ol>
+<li>通过一个类的全限定名来获取定义此类的二进制字节流。</li>
+<li>将这个字节流所代表的静态存储结构转换为方法区的运行时数据结构。</li>
+<li>在内存中生成一个代表这个类的<code>java.lang.Class</code>的对象，作为方法区这个类的各种数据的访问入口。</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/15/jvm/" rel="next" title="java内存区域">
+                <i class="fa fa-chevron-left"></i> java内存区域
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/18/velocity自定义函数/" rel="prev" title="velocity自定义函数">
+                velocity自定义函数 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/detective.png" alt="Simon">
+            
+              <p class="site-author-name" itemprop="name">Simon</p>
+              <p class="site-description motion-element" itemprop="description">做一个诚实善良的人比什么都重要</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#虚拟机类加载机制是什么"><span class="nav-number">1.</span> <span class="nav-text">虚拟机类加载机制是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#类加载的时机"><span class="nav-number">2.</span> <span class="nav-text">类加载的时机</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#被动引用和被动引用的几个例子"><span class="nav-number">2.1.</span> <span class="nav-text">被动引用和被动引用的几个例子</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#被动引用例一"><span class="nav-number">2.1.1.</span> <span class="nav-text">被动引用例一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#被动引用例二"><span class="nav-number">2.1.2.</span> <span class="nav-text">被动引用例二</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#被动引用例三"><span class="nav-number">2.1.3.</span> <span class="nav-text">被动引用例三</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#类加载的过程"><span class="nav-number">3.</span> <span class="nav-text">类加载的过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#加载"><span class="nav-number">3.1.</span> <span class="nav-text">加载</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Simon</span>
+
+  
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
